@@ -161,14 +161,14 @@
                     {{ invoice['template.payment_terms']|md2html }}
                 {% endif %}
             </div>
+            <p>Hinweis: Umsatzsteuerbefreit – Kleinunternehmer gem. § 6 Abs. 1 Z 27 UStG</p>
         </div>
 
-        <p>Hinweis: Umsatzsteuerbefreit – Kleinunternehmer gem. § 6 Abs. 1 Z 27 UStG</p>
 
         <footer class="footer">
             <p>
-                <strong>{{ 'address'|trans }}</strong>: {{ invoice['template.company'] }} &ndash; {{ invoice['template.address']|nl2str(' – ') }}
-                <br>
+{#                <strong>{{ 'address'|trans }}</strong>: {{ invoice['template.company'] }} &ndash; {{ invoice['template.address']|nl2str(' – ') }}#}
+{#                <br>#}
                 <strong>{{ 'invoice_bank_account'|trans }}</strong>: {{ invoice['template.payment_details']|nl2str(' – ') }}
                 <br>
                 <strong>{{ 'contact'|trans }}</strong>: {{ invoice['template.contact']|nl2str(' – ') }}

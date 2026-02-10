@@ -24,7 +24,7 @@ var/templates/
 /var/dev/*
 /var/data/*
 /var/cache/*
-/var/invoices*
+#/var/invoices*
 /var/export*
 /var/log/*
 /var/sessions/*
