@@ -33,10 +33,10 @@
                         <br>
                         {{ 'vat_id'|trans }}: {{ invoice['customer.vat_id'] }}
                     {% endif %}
-                    {% if invoice['customer.number'] is not empty %}
-                        <br>
-                        {{ 'number'|trans }}: {{ invoice['customer.number'] }}
-                    {% endif %}
+{#                    {% if invoice['customer.number'] is not empty %}#}
+{#                        <br>#}
+{#                        {{ 'number'|trans }}: {{ invoice['customer.number'] }}#}
+{#                    {% endif %}#}
                     {% if invoice['query.project.order_number'] is defined and invoice['query.project.order_number'] is not empty %}
                         <br>
                         {{ 'orderNumber'|trans }}: {{ invoice['query.project.order_number'] }}
@@ -164,18 +164,15 @@
             <p>Hinweis: Umsatzsteuerbefreit – Kleinunternehmer gem. § 6 Abs. 1 Z 27 UStG</p>
         </div>
 
-
-        <footer class="footer">
-            <p>
-{#                <strong>{{ 'address'|trans }}</strong>: {{ invoice['template.company'] }} &ndash; {{ invoice['template.address']|nl2str(' – ') }}#}
-{#                <br>#}
-                <strong>{{ 'invoice_bank_account'|trans }}</strong>: {{ invoice['template.payment_details']|nl2str(' – ') }}
-                <br>
-                <strong>{{ 'contact'|trans }}</strong>: {{ invoice['template.contact']|nl2str(' – ') }}
-            </p>
-        </footer>
-
     </section>
 </div>
+{% block footer %}
+<footer class="footer">
+    <p>
+        <strong>{{ 'invoice_bank_account'|trans }}</strong>: {{ invoice['template.payment_details']|nl2str(' – ') }}<br>
+        <strong>{{ 'contact'|trans }}</strong>: {{ invoice['template.contact']|nl2str(' – ') }}
+    </p>
+</footer>
+{% endblock %}
 </body>
 </html>
