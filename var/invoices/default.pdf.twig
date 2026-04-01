@@ -1,3 +1,20 @@
+{% set _dummy2 = pdfContext.setOption('margin_top', '50') %}
+{% set _dummy3 = pdfContext.setOption('margin_header', '15') %}
+{% set _dummy = pdfContext.setOption('fonts', {
+    'podkova': {
+        'R': 'Podkova-Regular.ttf',
+        'B': 'Podkova-Bold.ttf'
+    },
+    'podkovamedium': {
+        'R': 'Podkova-Medium.ttf'
+    },
+    'podkovasemibold': {
+        'R': 'Podkova-SemiBold.ttf'
+    },
+    'podkovaextrabold': {
+        'R': 'Podkova-ExtraBold.ttf'
+    }
+}) %}
 <!DOCTYPE html>
 <html lang="{{ invoice['invoice.language'] }}">
 <head>
@@ -5,6 +22,10 @@
     <title>{% block title %}{{ invoice['invoice.number'] }}-{{ invoice['customer.company']|default(invoice['customer.name'])|u.snake }}{% endblock %}</title>
     <style>
         {{ encore_entry_css_source('invoice-pdf')|raw }}
+        body { font-family: podkova, sans-serif; }
+        table.header { border: 1px solid #000; border-bottom: 1px solid #000; padding: 25px; }
+        table.footer { border-top: 1px solid #000; }
+        table.items thead th, table.items tbody td { border-bottom: 1px solid #000; }
     </style>
 </head>
 <body>
@@ -12,11 +33,27 @@
 <htmlpageheader name="header">
     <table class="header">
         <tr>
-            <td class="title">
-                {{ invoice['template.title'] }}
+            <td class="title" width="70%" valign="middle">
+                <table>
+                    <tr>
+                        <td style="font-size: 26pt; font-family: podkovasemibold; line-height: 1">{{ invoice['template.company'] }}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 12pt; font-family: podkovasemibold">Web Development</td>
+                    </tr>
+                </table>
             </td>
-            <td class="date text-right">
-                {{ 'date'|trans }}: {{ invoice['invoice.date'] }}
+            <td width="30%" valign="middle" style="vertical-align: middle; font-size: 11pt">
+               {{ invoice['template.address']|trim }}<br>
+               {{ invoice['template.contact']|replace({' – ': "\n"})|nl2str('<br />') }}
+               <!--
+               {% if invoice['template.country'] is not null %}
+                    {% set country = invoice['template.country']|country_name(invoice['invoice.language']) %}
+                    {% if country not in invoice['template.address'] %}
+                        <br> {{ country }}
+                    {% endif %}
+                {% endif %}
+                -->
             </td>
         </tr>
     </table>
@@ -26,10 +63,11 @@
     <table class="footer">
         <tr>
             <td>
-                <strong>{{ 'contact'|trans }}</strong>:
-                {{ invoice['template.contact']|nl2str(' – ') }}
-                <br>
-                <strong>{{ 'invoice_bank_account'|trans }}</strong>:
+                {% if invoice['template.vat_id'] is not empty %}
+                <strong>{{ 'vat_id'|trans }}:</strong>
+                {{ invoice['template.vat_id'] }} |
+                {% endif %}
+                <strong>{{ 'invoice_bank_account'|trans }}:</strong>
                 {{ invoice['template.payment_details']|nl2str(' – ') }}
             </td>
             <td align="right">
@@ -42,10 +80,8 @@
 mpdf-->
     <table class="addresses">
         <tr>
-            <td style="width:60%">
-                {{ 'invoice.to'|trans }}
-                <br>
-                <strong>{{ invoice['customer.company']|default(invoice['customer.name']) }}</strong>
+            <td style="width:65%">
+                {{ invoice['customer.company']|default(invoice['customer.name']) }}
                 <br>
                 {{ invoice['customer.address']|nl2br }}
                 {% set country = invoice['customer.country']|country_name(invoice['invoice.language']) %}
@@ -57,35 +93,28 @@ mpdf-->
                     {{ 'vat_id'|trans }}: {{ invoice['customer.vat_id'] }}
                 {% endif %}
             </td>
-            <td>
-                {{ 'invoice.from'|trans }}
-                <br>
-                <strong>{{ invoice['template.company'] }}</strong>
-                <br>
-                {{ invoice['template.address']|trim|nl2br }}
-                {% if invoice['template.country'] is not null %}
-                    {% set country = invoice['template.country']|country_name(invoice['invoice.language']) %}
-                    {% if country not in invoice['template.address'] %}
-                        <br> {{ country }}
-                    {% endif %}
-                {% endif %}
-                {% if invoice['template.vat_id'] is not empty %}
-                    <br>
-                    {{ 'vat_id'|trans }}:
-                    {{ invoice['template.vat_id'] }}
-                {% endif %}
+            <td style="white-space: nowrap">
+                <table>
+                    <tr>
+                        <td nowrap><strong>{{ 'invoice.number'|trans }}:</strong></td>
+                        <td nowrap>{{ invoice['invoice.number'] }}</td>
+                    </tr>
+                    <tr>
+                        <td nowrap><strong>{{ 'date'|trans }}:</strong></td>
+                        <td nowrap>{{ invoice['invoice.date'] }}</td>
+                    </tr>
+                    <tr>
+                        <td nowrap><strong>{{ 'invoice.due_days'|trans }}:</strong></td>
+                        <td nowrap>{{ invoice['invoice.due_date'] }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
 
+<div style="font-size: 12pt; font-family: podkovasemibold; margin-top: 25mm;">{{ invoice['template.title'] }}</div>
+
     <p>
-        {{ 'invoice.number'|trans }}:
-        {{ invoice['invoice.number'] }}
-
-        <br>
-        {{ 'invoice.due_days'|trans }}:
-        {{ invoice['invoice.due_date'] }}
-
 {#        {% if invoice['customer.number'] is not empty %}#}
 {#            <br>#}
 {#            {{ 'number'|trans }}:#}
@@ -135,6 +164,7 @@ mpdf-->
         {% endfor %}
         </tbody>
         <tfoot>
+            <!--
             <tr>
                 <td colspan="4" class="text-right">
                     {{ 'invoice.subtotal'|trans }}
@@ -154,6 +184,7 @@ mpdf-->
                 </tr>
                 {% endif %}
             {% endfor %}
+            -->
             <tr>
                 <td colspan="4" class="text-right text-nowrap">
                     <strong>{{ 'invoice.total'|trans }}</strong>
