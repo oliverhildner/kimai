@@ -23,6 +23,8 @@ var/templates/
 /config/bundles-local.php
 /var/dev/*
 /var/data/*
+!/var/data/fonts/
+!/var/data/fonts/*
 /var/cache/*
 #/var/invoices*
 /var/export*
